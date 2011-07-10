@@ -17,13 +17,13 @@
       <value>'7/10/2011'</value>
     </define>
     <source-path append="true">
-      <path-element>C:\Documents and Settings\User\My Documents\_Work\Freelance\PickleWars\BUILD\062911\src</path-element>
-      <path-element>C:\Documents and Settings\User\My Documents\_Work\Freelance\PickleWars\BUILD\062911\lib</path-element>
+      <path-element>C:\Documents and Settings\User\My Documents\_Work\Freelance\PickleWars\BUILD\src</path-element>
+      <path-element>C:\Documents and Settings\User\My Documents\_Work\Freelance\PickleWars\BUILD\lib</path-element>
       <path-element>C:\Program Files\FlashDevelop\Library\AS3\classes</path-element>
     </source-path>
   </compiler>
   <file-specs>
-    <path-element>C:\Documents and Settings\User\My Documents\_Work\Freelance\PickleWars\BUILD\062911\src\com\picklewars\ricksdiner\Main.as</path-element>
+    <path-element>C:\Documents and Settings\User\My Documents\_Work\Freelance\PickleWars\BUILD\src\com\picklewars\ricksdiner\Main.as</path-element>
   </file-specs>
   <default-background-color>#FFFFFF</default-background-color>
   <default-frame-rate>60</default-frame-rate>

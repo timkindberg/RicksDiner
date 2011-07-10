@@ -12,7 +12,7 @@ package com.picklewars.ricksdiner
 		
 		public function Main():void 
 		{
-			super(5000, 300, TestChipStateFlatWalk, 2);
+			super(600, 600, TestChipStateFlatWalk, 1, 60, 30, true);
 		}
 		
 	}

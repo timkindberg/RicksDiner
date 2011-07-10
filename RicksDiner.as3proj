@@ -72,7 +72,7 @@
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
-    <!-- example: <hidden path="..." /> -->
+    <hidden path="README" />
   </hiddenPaths>
   <!-- Executed before build -->
   <preBuildCommand />
@@ -81,6 +81,6 @@
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
-    <option testMovie="Default" />
+    <option testMovie="ExternalPlayer" />
   </options>
 </project>

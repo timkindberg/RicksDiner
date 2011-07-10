@@ -14,7 +14,7 @@ package com.picklewars.ricksdiner
 	 */
 	public class TestChipState extends FlxState
 	{		
-		private var chip:Chipv2;
+		private var chip:Chip;
 		private var floor:FlxTileblock;
 		private var level:FlxGroup;
 		private var wall:FlxTileblock;
@@ -32,7 +32,7 @@ package com.picklewars.ricksdiner
 			back.makeGraphic(600, 1800);
 			add(back);			
 			
-			chip = new Chipv2(300, 600 - 59 - 50 - 100);
+			chip = new Chip(300, 600 - 59 - 50 - 100);
 			add(chip);
 			
 			// FLOOR
