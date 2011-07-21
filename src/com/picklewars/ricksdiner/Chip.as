@@ -19,9 +19,13 @@ package com.picklewars.ricksdiner
 		private var speedAcceleration:int = 1000;		
 		private var turnAroundMultiplier:int = 3;	
 		private var jumpAcceleration:int = 1000;
-		private var doubleJump:Boolean = false;
+		private var doubleJump:Boolean;
 		private var jumpstart:Boolean;
 		private var landing:Boolean;
+		private var punch:int = 1;
+		private var punching:Boolean;
+		private var justFinished:Boolean;
+		private var lastFrameFinished:Boolean;
 		
 		public function Chip(X:Number = 0, Y:Number = 0) 
 		{	
@@ -37,11 +41,17 @@ package com.picklewars.ricksdiner
 			addAnimation("jump", [14]);
 			addAnimation("fall", [15]);
 			addAnimation("land", [16, 17], 8, false);		
+			addAnimation("punch1", [18, 19, 19, ], 15, false);		
+			addAnimation("punch2", [20, 21, 21], 15, false);		
+			addAnimation("kick", [22, 23], 15, false);		
 			
 		}
 		
 		override public function update():void
-		{	
+		{		
+			justFinished = false;
+			if (!lastFrameFinished && finished) justFinished = true;
+			lastFrameFinished = finished;
 			
 			if (justTouched(FLOOR)) 
 			{
@@ -63,29 +73,65 @@ package com.picklewars.ricksdiner
 			}
 			if (isTouching(FLOOR) )
 			{
-				if (FlxG.keys.SPACE)
+				if (FlxG.keys.justPressed("UP"))
 				{ 				
 					play("jumpstart");
+					landing = false;
 					jumpstart = true;					
 				}
-				else
-				{					
-					jumpstart = false;
+			}
+			
+			if (!jumpstart && velocity.y == 0)
+			{
+				if (FlxG.keys.justPressed("X"))
+				{
+					play("punch1");
+					punching = true;
+					punch = 2;
+				}
+			}
+			
+			//trace("finished:", finished);			
+			if (punching && justFinished) 
+			{
+				if (FlxG.keys.justPressed("X"))
+				{
+					if (punch == 2) 
+					{
+						play("punch2");
+						punch = 3;
+					}
+					if (punch == 3) 
+					{
+						play("kick");
+						punch = 1;
+					}
+				}
+				else 
+				{
+					punching = false;	
+					punch = 1;
 				}
 			}
 			
 			
 			if (jumpstart && frame == 13)
 			{
-				velocity.y = -maxVelocity.y
-				jumpstart = false;				
+				trace("velocity.y:", jumpstart, frame, landing);
+				jumpstart = false;
+				maxVelocity.y = 500;
+				velocity.y = -maxVelocity.y				
 			} 
 			
-			if (!jumpstart && !landing)
+			if (landing && frame == 17) 
+			{
+				landing = false;
+			}
+			
+			if (!jumpstart && !landing && !punching)
 			{
 				if (velocity.y < 0) 
 				{ 
-					maxVelocity.y = 500;
 					play("jump");
 				}
 				else if (velocity.y > 0)
@@ -103,10 +149,6 @@ package com.picklewars.ricksdiner
 				}
 			}
 			
-			if (landing && frame == 17) 
-			{
-				landing = false;
-			}
 			
 			super.update();
 		}
