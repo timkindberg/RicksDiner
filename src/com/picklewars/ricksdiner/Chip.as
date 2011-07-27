@@ -19,13 +19,14 @@ package com.picklewars.ricksdiner
 		private var speedAcceleration:int = 1000;		
 		private var turnAroundMultiplier:int = 3;	
 		private var jumpAcceleration:int = 1000;
-		private var doubleJump:Boolean;
-		private var jumpstart:Boolean;
-		private var landing:Boolean;
-		private var punch:int = 1;
-		private var punching:Boolean;
-		private var punchWindow:int = 0;
-		private var jumping:Boolean;
+		private var attackNum:int = 1;
+		private var attackWindow:int = 0;
+		
+		public var jumpstart:Boolean;
+		public var jumping:Boolean;
+		public var landing:Boolean;		
+		public var attacking:Boolean;
+		public var attackClimax:Boolean;
 		
 		
 		public function Chip(X:Number = 0, Y:Number = 0) 
@@ -62,40 +63,40 @@ package com.picklewars.ricksdiner
 		
 		private function handleGroundAttack():void 
 		{
-			trace("punchWindow:", punchWindow);
-			punchWindow--;
-			if (punchWindow < 0) punchWindow = 0;
+			attackWindow--;
+			if (attackWindow < 0) attackWindow = 0;
+			attackClimax = false;
 			
-			if (punching && finished) 
+			if (attacking && finished) 
 			{
-				punching = false;				
-				trace("!!!!punchWindow:", punchWindow);
+				attackClimax = true;
+				attacking = false;				
 			}
 			
-			if (!punching && velocity.y == 0 && FlxG.keys.justPressed("X")) 
+			if (!attacking && velocity.y == 0 && FlxG.keys.justPressed("SPACE")) 
 			{				
-				if (punchWindow == 0)
+				if (attackWindow == 0)
 				{
 					play("punch1");
-					punching = true;
-					punch = 2;
-					punchWindow = 30;					
+					attacking = true;
+					attackNum = 2;
+					attackWindow = 30;					
 				}
-				else if (punchWindow > 0)
+				else if (attackWindow > 0)
 				{
-					if (punch == 2) 
+					if (attackNum == 2) 
 					{
 						play("punch2");
-						punching = true;
-						punch = 3;
-						punchWindow = 30;
+						attacking = true;
+						attackNum = 3;
+						attackWindow = 30;
 					}
-					else if (punch == 3) 
+					else if (attackNum == 3) 
 					{
 						play("kick");
-						punching = true;
-						punch = 1;
-						punchWindow = 15;
+						attacking = true;
+						attackNum = 1;
+						attackWindow = 15;
 					}	
 				}								
 			}		
@@ -158,7 +159,7 @@ package com.picklewars.ricksdiner
 				acceleration.x += drag.x;
 			}
 			
-			if (!jumpstart && !landing && !punching)
+			if (!jumpstart && !landing && !attacking)
 			{
 				if (velocity.y < 0) 
 				{ 
