@@ -5,6 +5,7 @@ package com.picklewars.ricksdiner
 	import org.flixel.FlxCamera;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+	import org.flixel.FlxObject;
 	import org.flixel.FlxSprite;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
@@ -19,13 +20,17 @@ package com.picklewars.ricksdiner
 	 * @author Tim Kindberg
 	 */
 	public class TestChipStateFlatWalk extends FlxState
-	{				
+	{		
+		[Embed(source = "data/evilhotdog.png")]
+		private var EvilHotDogGraphic:Class;	
+		
 		private var chip:Chip;
 		private var floor:FlxTileblock;
 		private var level:FlxGroup;
 		private var blocks:FlxGroup;
 		private var wall:FlxTileblock;
 		private var block:FlxSprite;
+		private var enemies:FlxGroup;
 		
 		public function TestChipStateFlatWalk() 
 		{
@@ -70,9 +75,10 @@ package com.picklewars.ricksdiner
 				var bx:uint = Utils.roundToNearest(500, FlxG.random() * FlxG.worldBounds.width);
 				var by:uint = Utils.roundToNearest(200, FlxG.random() * FlxG.worldBounds.height);
 				block = new FlxSprite(bx, by);
-				block.makeGraphic(FlxG.random()*250+250, 10, FlxColor.getRandomColor());
+				block.makeGraphic(FlxG.random()*250+150, 10, 0xFF000000);
 				//enemy.acceleration.y = 800;
 				block.immovable = true;
+				block.allowCollisions = FlxObject.UP;
 				blocks.add(block);
 			}
 			
@@ -85,12 +91,28 @@ package com.picklewars.ricksdiner
 			var e:MouseEvent = new MouseEvent(MouseEvent.MOUSE_UP);
 			FlxG.mouse.handleMouseUp(e);
 			
+			enemies = new FlxGroup();
+			add(enemies);
+			for (i = 0; i < 250; i++)
+			{						
+				bx = FlxG.random() * FlxG.worldBounds.width;
+				by = FlxG.random() * FlxG.worldBounds.height;
+				var enemy:FlxSprite = new FlxSprite(bx, by);
+				enemy.loadGraphic(EvilHotDogGraphic, false, true);
+				enemy.health = 3;
+				enemy.acceleration.y = 800;
+				enemy.facing = FlxObject.RIGHT;
+				enemies.add(enemy);
+			}
+			
 		}
 		
 		override public function update():void
 		{
 			
 			FlxG.collide(chip, level)		
+			FlxG.collide(enemies, level)		
+			FlxG.overlap(chip, enemies, chipEnemyOverlap)		
 			
 			
 			if (FlxG.mouse.justPressed()) 
@@ -110,12 +132,11 @@ package com.picklewars.ricksdiner
 			super.update();
 		}		
 		
-		private function enemyCollide(chip:Chip, enemy:FlxSprite):void 
+		public function chipEnemyOverlap(chip:Chip, enemy:FlxSprite):void 
 		{
-			
+			if (chip.attackClimax) enemy.hurt(1);
 		}
-		
-		
+				
 	}
 
 }
