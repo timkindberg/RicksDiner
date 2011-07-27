@@ -24,8 +24,9 @@ package com.picklewars.ricksdiner
 		private var landing:Boolean;
 		private var punch:int = 1;
 		private var punching:Boolean;
-		private var justFinished:Boolean;
-		private var lastFrameFinished:Boolean;
+		private var punchWindow:int = 0;
+		private var jumping:Boolean;
+		
 		
 		public function Chip(X:Number = 0, Y:Number = 0) 
 		{	
@@ -43,23 +44,108 @@ package com.picklewars.ricksdiner
 			addAnimation("land", [16, 17], 8, false);		
 			addAnimation("punch1", [18, 19, 19, ], 15, false);		
 			addAnimation("punch2", [20, 21, 21], 15, false);		
-			addAnimation("kick", [22, 23], 15, false);		
-			
+			addAnimation("kick", [22, 23], 15, false);	
 		}
 		
 		override public function update():void
-		{		
-			justFinished = false;
-			if (!lastFrameFinished && finished) justFinished = true;
-			lastFrameFinished = finished;
+		{					
+			handleMovement();
 			
+			handleJump();
+			
+			handleLanding();
+			
+			handleGroundAttack();						
+			
+			super.update();
+		}
+		
+		private function handleGroundAttack():void 
+		{
+			trace("punchWindow:", punchWindow);
+			punchWindow--;
+			if (punchWindow < 0) punchWindow = 0;
+			
+			if (punching && finished) 
+			{
+				punching = false;				
+				trace("!!!!punchWindow:", punchWindow);
+			}
+			
+			if (!punching && velocity.y == 0 && FlxG.keys.justPressed("X")) 
+			{				
+				if (punchWindow == 0)
+				{
+					play("punch1");
+					punching = true;
+					punch = 2;
+					punchWindow = 30;					
+				}
+				else if (punchWindow > 0)
+				{
+					if (punch == 2) 
+					{
+						play("punch2");
+						punching = true;
+						punch = 3;
+						punchWindow = 30;
+					}
+					else if (punch == 3) 
+					{
+						play("kick");
+						punching = true;
+						punch = 1;
+						punchWindow = 15;
+					}	
+				}								
+			}		
+		}
+		
+		
+		private function handleLanding():void 
+		{
 			if (justTouched(FLOOR)) 
 			{
 				play("land");
 				landing = true;
 			}
 			
-			//MOVEMENT
+			if (landing && finished) 
+			{
+				landing = false;
+			}
+		}		
+		
+		private function handleJump():void 
+		{
+			if (isTouching(FLOOR))
+			{
+				if (!jumpstart && FlxG.keys.justPressed("UP"))
+				{ 				
+					play("jumpstart");
+					landing = false;
+					jumpstart = true;					
+				}
+			}
+			
+			if (jumpstart && !FlxG.keys.pressed("UP"))
+			{
+				jumpstart = false;
+			}
+			
+			if (jumpstart && finished)
+			{
+				trace("velocity.y:", jumpstart, frame, landing);
+				jumpstart = false;
+				jumping = true;
+				maxVelocity.y = 500;
+				velocity.y = -maxVelocity.y				
+			} 
+		}
+		
+				
+		private function handleMovement():void 
+		{
 			acceleration.x = 0;
 			if(FlxG.keys.LEFT)
 			{
@@ -70,62 +156,6 @@ package com.picklewars.ricksdiner
 			{ 
 				facing = RIGHT;
 				acceleration.x += drag.x;
-			}
-			if (isTouching(FLOOR) )
-			{
-				if (FlxG.keys.justPressed("UP"))
-				{ 				
-					play("jumpstart");
-					landing = false;
-					jumpstart = true;					
-				}
-			}
-			
-			if (!jumpstart && velocity.y == 0)
-			{
-				if (FlxG.keys.justPressed("X"))
-				{
-					play("punch1");
-					punching = true;
-					punch = 2;
-				}
-			}
-			
-			//trace("finished:", finished);			
-			if (punching && justFinished) 
-			{
-				if (FlxG.keys.justPressed("X"))
-				{
-					if (punch == 2) 
-					{
-						play("punch2");
-						punch = 3;
-					}
-					if (punch == 3) 
-					{
-						play("kick");
-						punch = 1;
-					}
-				}
-				else 
-				{
-					punching = false;	
-					punch = 1;
-				}
-			}
-			
-			
-			if (jumpstart && frame == 13)
-			{
-				trace("velocity.y:", jumpstart, frame, landing);
-				jumpstart = false;
-				maxVelocity.y = 500;
-				velocity.y = -maxVelocity.y				
-			} 
-			
-			if (landing && frame == 17) 
-			{
-				landing = false;
 			}
 			
 			if (!jumpstart && !landing && !punching)
@@ -148,9 +178,6 @@ package com.picklewars.ricksdiner
 					play("idle");
 				}
 			}
-			
-			
-			super.update();
 		}
 		
 	}
